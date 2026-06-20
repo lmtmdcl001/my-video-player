@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live TV Player</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+body{
+margin:0;
+background:#000;
+color:#fff;
+font-family:Arial,sans-serif;
+text-align:center;
+}
+video{
+width:100%;
+max-width:1200px;
+height:auto;
+margin-top:20px;
+}
+</style>
+</head>
+<body>
+
+<h2>Live TV Player</h2>
+
+<video id="video" controls autoplay></video>
+
+<script>
+const video = document.getElementById('video');
+
+// এখানে আপনার M3U8 লিংক বসাবেন
+const videoSrc = "YOUR_M3U8_URL";
+
+if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+}
+</script>
+
+</body>
+</html>
