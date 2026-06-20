@@ -2,22 +2,19 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live TV Player</title>
+<title>Live Player</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
-body{
-margin:0;
-background:#000;
-color:#fff;
-font-family:Arial,sans-serif;
-text-align:center;
+body {
+    margin:0;
+    background:black;
+    text-align:center;
+    color:white;
 }
-video{
-width:100%;
-max-width:1200px;
-height:auto;
-margin-top:20px;
+video {
+    width:100%;
+    max-width:900px;
+    margin-top:20px;
 }
 </style>
 </head>
@@ -30,14 +27,14 @@ margin-top:20px;
 <script>
 const video = document.getElementById('video');
 
-// https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8
-const videoSrc = "YOUR_M3U8_URL";
+const videoSrc = "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8";
 
 if (Hls.isSupported()) {
     const hls = new Hls();
     hls.loadSource(videoSrc);
     hls.attachMedia(video);
-} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+}
+else if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = videoSrc;
 }
 </script>
