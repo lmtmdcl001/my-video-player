@@ -3,101 +3,216 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRO IPTV PLAYER</title>
+<title>Sportz IPTV</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 body{
 margin:0;
-background:#000;
-color:white;
 font-family:Arial;
-display:flex;
-flex-direction:column;
-height:100vh;
+background:#0b0f1a;
+color:white;
 }
 
-.header{
-padding:12px;
-text-align:center;
-background:#111;
+/* TOP BAR */
+.topbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:12px 20px;
+background:#0f1629;
+border-bottom:1px solid #222;
+}
+
+.logo{
+font-weight:bold;
+color:#00ff88;
+}
+
+.search{
+width:40%;
+padding:10px;
+border-radius:8px;
+border:none;
+background:#1a2238;
+color:white;
+}
+
+/* FILTERS */
+.filters{
+padding:10px 20px;
+display:flex;
+gap:10px;
+}
+
+.btn{
+padding:6px 12px;
+background:#1a2238;
+border-radius:20px;
+cursor:pointer;
+font-size:13px;
+}
+
+.btn.active{
+background:#ff2e63;
+}
+
+/* CARDS */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:15px;
+padding:20px;
+}
+
+.card{
+background:#111a2e;
+border-radius:12px;
+padding:15px;
+border:1px solid #222;
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.03);
+border-color:#ff2e63;
+}
+
+.tag{
+font-size:12px;
+padding:3px 8px;
+background:#00ff88;
+color:black;
+border-radius:20px;
+display:inline-block;
+}
+
+.match{
+margin-top:10px;
 font-weight:bold;
 }
 
-.player-container{
-flex:1;
-display:flex;
-justify-content:center;
-align-items:center;
+.status{
+font-size:12px;
+color:#aaa;
+margin-top:5px;
+}
+
+/* PLAYER */
+.player{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:black;
+padding:10px;
+display:none;
 }
 
 video{
 width:100%;
-max-width:1000px;
-height:auto;
-background:black;
-}
-
-.status{
-text-align:center;
-padding:8px;
-font-size:13px;
-color:#aaa;
+max-height:300px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🔥 PRO IPTV SINGLE CHANNEL</div>
-
-<div class="player-container">
-<video id="video" controls autoplay></video>
+<div class="topbar">
+<div class="logo">⚽ Sportz IPTV</div>
+<input class="search" id="search" placeholder="Search events...">
 </div>
 
-<div class="status" id="status">Loading stream...</div>
+<div class="filters">
+<div class="btn active" onclick="filter('all')">All</div>
+<div class="btn" onclick="filter('cricket')">Cricket</div>
+<div class="btn" onclick="filter('football')">Football</div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="player" id="playerBox">
+<video id="video" controls autoplay></video>
+</div>
 
 <script>
 
 const video = document.getElementById("video");
-const status = document.getElementById("status");
+const grid = document.getElementById("grid");
+const playerBox = document.getElementById("playerBox");
 
-const streamURL = "https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8";
+let currentFilter = "all";
 
-let hls;
+const events = [
+{
+title:"World Cup 2026",
+type:"football",
+status:"LIVE",
+url:"https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
+},
+{
+title:"England vs New Zealand",
+type:"cricket",
+status:"LIVE",
+url:"https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
+},
+{
+title:"Pakistan Women vs Bangladesh Women",
+type:"cricket",
+status:"LIVE",
+url:"https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
+}
+];
 
-function playStream(url){
+function play(url){
+playerBox.style.display="block";
 
-    if(hls){
-        hls.destroy();
-        hls = null;
-    }
-
-    if(Hls.isSupported()){
-        hls = new Hls({
-            maxBufferLength: 30
-        });
-
-        hls.loadSource(url);
-        hls.attachMedia(video);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, function(){
-            status.innerText = "LIVE ✔ Playing...";
-            video.play();
-        });
-
-        hls.on(Hls.Events.ERROR, function(){
-            status.innerText = "❌ Stream error (blocked or offline)";
-        });
-
-    } else {
-        video.src = url;
-        status.innerText = "Playing (native mode)";
-    }
+if(Hls.isSupported()){
+const hls = new Hls();
+hls.loadSource(url);
+hls.attachMedia(video);
+} else {
+video.src = url;
 }
 
-playStream(streamURL);
+video.play();
+}
+
+function render(){
+grid.innerHTML="";
+
+let q = document.getElementById("search").value.toLowerCase();
+
+events
+.filter(e => currentFilter==="all" ? true : e.type===currentFilter)
+.filter(e => e.title.toLowerCase().includes(q))
+.forEach(e=>{
+
+let div = document.createElement("div");
+div.className="card";
+
+div.innerHTML=`
+<span class="tag">${e.type.toUpperCase()}</span>
+<div class="match">${e.title}</div>
+<div class="status">🔴 ${e.status}</div>
+`;
+
+div.onclick=()=>play(e.url);
+
+grid.appendChild(div);
+});
+}
+
+function filter(type){
+currentFilter=type;
+render();
+}
+
+document.getElementById("search").addEventListener("input",render);
+
+render();
 
 </script>
 
