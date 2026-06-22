@@ -1,135 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Watch live TV channels online - Sports, Entertainment, News and more">
-    <title>BuddyTV - Live Streaming Platform</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAMAN IPTV ULTRA ENGINE</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-    <!-- HLS.js Library for m3u8 streaming -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
 
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+header{
+padding:15px;
+background:linear-gradient(90deg,#22c55e,#06b6d4);
+text-align:center;
+font-weight:bold;
+}
+
+.player{
+position:relative;
+background:black;
+}
+
+video{
+width:100%;
+height:auto;
+}
+
+.sidebar{
+width:280px;
+background:#111827;
+height:100vh;
+overflow:auto;
+float:left;
+padding:10px;
+}
+
+.channel{
+padding:10px;
+margin:5px;
+background:#1f2937;
+cursor:pointer;
+border-radius:8px;
+}
+
+.channel:hover{
+background:#22c55e;
+}
+
+.main{
+margin-left:280px;
+padding:10px;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:10px;
+}
+
+button,select{
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+.status{
+margin-top:10px;
+color:#22c55e;
+}
+</style>
 </head>
 
 <body>
-    <!-- Animated Background -->
-    <div class="animated-background"></div>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="7" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2" />
-                            <path d="M17 2L12 7L7 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <circle cx="8" cy="13" r="1.5" fill="currentColor" />
-                            <circle cx="16" cy="13" r="1.5" fill="currentColor" />
-                        </svg>
-                    </div>
-                    <h1>Buddy<span class="logo-accent">TV</span></h1>
-                </div>
+<header>⚡ ZAMAN IPTV ULTRA ENGINE</header>
 
-                <div class="header-right">
-                
-                    <div class="live-badge">
-                        <span class="pulse-dot"></span>
-                        LIVE
-                    </div>
-                </div>
-            </div>
-        </header>
+<div class="sidebar" id="list"></div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Video Player Section -->
-            <section class="video-section">
-                <div class="video-container">
-                    <video id="videoPlayer" class="video-player" controls playsinline>
-                        <source src="" type="application/x-mpegURL">
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="video-overlay" id="videoOverlay">
-                        <div class="play-button" id="playButton">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </div>
-                        <p class="select-channel-text">Select a channel to start watching</p>
-                    </div>
-                    <div class="loading-indicator" id="loadingIndicator">
-                        <div class="spinner"></div>
-                        <p>Loading stream...</p>
-                    </div>
-                </div>
-                <div class="now-playing" id="nowPlaying">
-                    <div class="now-playing-content">
-                        <span class="now-playing-label">NOW PLAYING</span>
-                        <h2 id="currentChannelName">-</h2>
-                    </div>
-                </div>
-            </section>
+<div class="main">
 
-            <!-- Category Navigation -->
-            <section class="category-section">
-                <div class="category-nav">
-                    <button class="category-btn active" data-category="all">
-                        <span>All Channels</span>
-</button>
-                    <button class="category-btn" data-category="bangla">
-                        <span>Bangla</span>
-                    </button>
-                    <button class="category-btn" data-category="hindi">
-                        <span>Hindi</span>
-                    </button>
-                    <button class="category-btn" data-category="sports">
-                        <span>Sports</span>
-                    </button>
-                    <button class="category-btn" data-category="worldcup">
-                        <span>WorldCup</span>
-                    </button>
-                    <button class="category-btn" data-category="movies">
-                        <span>Movies</span>
-                    </button>
-                </div>
-            </section>
+<div class="player">
+<video id="video" controls autoplay></video>
+</div>
 
-            <!-- Channels Grid -->
-            <section class="channels-section">
-                <h2 class="section-title">Browse Channels</h2>
-                <div class="channels-grid" id="channelsGrid">
-                    <!-- Channels will be dynamically loaded here -->
-                </div>
-                <div class="no-results" id="noResults">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
-                        <path d="M12 6v6M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
-                    <p>No channels found</p>
-                </div>
-            </section>
-        </main>
+<div class="controls">
+<button onclick="toggleAuto()">Auto Quality</button>
+<button onclick="fullscreen()">Fullscreen</button>
+</div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 BuddyTV. All rights reserved. | Premium Live Streaming Experience</p>
-        </footer>
-    </div>
+<div class="status" id="status">Ready</div>
 
-    <!-- JavaScript -->
-    <script src="app.js"></script>
+</div>
+
+<script>
+
+const channels=[
+{name:"Sports 1",url:"https://sofascore.live/api/premium-stream?..."},
+{name:"Sports 2",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
+{name:"Sports 3",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
+{name:"Sports 4",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"}
+];
+
+let video=document.getElementById("video");
+let list=document.getElementById("list");
+let status=document.getElementById("status");
+
+let hls=null;
+let auto=true;
+let currentUrl=null;
+
+/* ================= BANDWIDTH DETECTOR ================= */
+async function getSpeed(){
+let start=performance.now();
+try{
+await fetch("https://1.1.1.1",{mode:"no-cors"});
+}catch(e){}
+let end=performance.now();
+let diff=end-start;
+
+if(diff<200) return "high";
+if(diff<500) return "mid";
+return "low";
+}
+
+/* ================= CDN FALLBACK ================= */
+function buildCDN(url){
+return [
+url,
+url.replace("streamhostingcdn","backup1.cdn"),
+url.replace("streamhostingcdn","backup2.cdn")
+];
+}
+
+/* ================= PLAY ENGINE ================= */
+function play(url){
+
+currentUrl=url;
+
+if(hls) hls.destroy();
+
+let cdns=buildCDN(url);
+let tryIndex=0;
+
+hls=new Hls({
+enableWorker:true,
+lowLatencyMode:true,
+maxBufferLength:60,
+backBufferLength:120,
+startLevel:-1
+});
+
+function load(){
+if(tryIndex>=cdns.length){
+status.innerText="❌ Stream failed";
+return;
+}
+
+status.innerText="🔄 Loading CDN "+(tryIndex+1);
+
+hls.loadSource(cdns[tryIndex]);
+hls.attachMedia(video);
+}
+
+hls.on(Hls.Events.MANIFEST_PARSED,async ()=>{
+status.innerText="🟢 LIVE";
+
+if(auto){
+let speed=await getSpeed();
+if(speed==="high") hls.currentLevel=hls.levels.length-1;
+else if(speed==="mid") hls.currentLevel=Math.floor(hls.levels.length/2);
+else hls.currentLevel=0;
+}
+
+video.play();
+});
+
+hls.on(Hls.Events.ERROR,(e,d)=>{
+if(d.fatal){
+tryIndex++;
+load();
+}
+});
+
+load();
+}
+
+/* ================= UI ================= */
+channels.forEach((c,i)=>{
+let div=document.createElement("div");
+div.className="channel";
+div.innerText=c.name;
+div.onclick=()=>play(c.url);
+list.appendChild(div);
+});
+
+/* ================= AUTO QUALITY ================= */
+function toggleAuto(){
+auto=!auto;
+status.innerText=auto?"Auto ON":"Auto OFF";
+}
+
+/* ================= FULLSCREEN ================= */
+function fullscreen(){
+if(video.requestFullscreen) video.requestFullscreen();
+}
+
+/* ================= INSTANT ZAPPING ================= */
+let lastTime=0;
+video.addEventListener("waiting",()=>{
+let now=Date.now();
+if(now-lastTime<1500){
+status.innerText="⚡ Fast switching...";
+}
+lastTime=now;
+});
+
+</script>
+
 </body>
-
 </html>
