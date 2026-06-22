@@ -1,250 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Watch live TV channels online - Sports, Entertainment, News and more">
+    <title>BuddyTV - Live Streaming Platform</title>
 
-<title>Live Stream Player</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- HLS.js Library for m3u8 streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#0f172a;
-    color:#fff;
-    font-family:Arial,sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-}
-
-.container{
-    width:100%;
-    max-width:1100px;
-}
-
-.card{
-    background:#111827;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 0 25px rgba(0,0,0,.4);
-}
-
-.header{
-    background:#1e293b;
-    padding:20px;
-    text-align:center;
-}
-
-.header h1{
-    font-size:28px;
-}
-
-.status{
-    margin-top:8px;
-    color:#22c55e;
-    font-size:14px;
-}
-
-.player-wrapper{
-    position:relative;
-    background:#000;
-}
-
-video{
-    width:100%;
-    display:block;
-    background:#000;
-}
-
-.loader{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:60px;
-    height:60px;
-    margin-left:-30px;
-    margin-top:-30px;
-    border:6px solid rgba(255,255,255,0.2);
-    border-top:6px solid #22c55e;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
-    z-index:100;
-}
-
-.hidden{
-    display:none;
-}
-
-@keyframes spin{
-    from{
-        transform:rotate(0deg);
-    }
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-.controls{
-    padding:15px;
-    text-align:center;
-    background:#111827;
-}
-
-button{
-    background:#22c55e;
-    color:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:14px;
-}
-
-button:hover{
-    opacity:.9;
-}
-
-.footer{
-    padding:15px;
-    text-align:center;
-    color:#94a3b8;
-    font-size:13px;
-}
-</style>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <!-- Animated Background -->
+    <div class="animated-background"></div>
 
-<div class="container">
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="7" width="20" height="13" rx="2" stroke="currentColor" stroke-width="2" />
+                            <path d="M17 2L12 7L7 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+                            <circle cx="16" cy="13" r="1.5" fill="currentColor" />
+                        </svg>
+                    </div>
+                    <h1>Buddy<span class="logo-accent">TV</span></h1>
+                </div>
 
-    <div class="card">
+                <div class="header-right">
+                
+                    <div class="live-badge">
+                        <span class="pulse-dot"></span>
+                        LIVE
+                    </div>
+                </div>
+            </div>
+        </header>
 
-        <div class="header">
-            <h1>📺 Live Stream Player</h1>
-            <div id="status" class="status">Connecting...</div>
-        </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Video Player Section -->
+            <section class="video-section">
+                <div class="video-container">
+                    <video id="videoPlayer" class="video-player" controls playsinline>
+                        <source src="" type="application/x-mpegURL">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-overlay" id="videoOverlay">
+                        <div class="play-button" id="playButton">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </div>
+                        <p class="select-channel-text">Select a channel to start watching</p>
+                    </div>
+                    <div class="loading-indicator" id="loadingIndicator">
+                        <div class="spinner"></div>
+                        <p>Loading stream...</p>
+                    </div>
+                </div>
+                <div class="now-playing" id="nowPlaying">
+                    <div class="now-playing-content">
+                        <span class="now-playing-label">NOW PLAYING</span>
+                        <h2 id="currentChannelName">-</h2>
+                    </div>
+                </div>
+            </section>
 
-        <div class="player-wrapper">
+            <!-- Category Navigation -->
+            <section class="category-section">
+                <div class="category-nav">
+                    <button class="category-btn active" data-category="all">
+                        <span>All Channels</span>
+</button>
+                    <button class="category-btn" data-category="bangla">
+                        <span>Bangla</span>
+                    </button>
+                    <button class="category-btn" data-category="hindi">
+                        <span>Hindi</span>
+                    </button>
+                    <button class="category-btn" data-category="sports">
+                        <span>Sports</span>
+                    </button>
+                    <button class="category-btn" data-category="worldcup">
+                        <span>WorldCup</span>
+                    </button>
+                    <button class="category-btn" data-category="movies">
+                        <span>Movies</span>
+                    </button>
+                </div>
+            </section>
 
-            <div id="loader" class="loader"></div>
+            <!-- Channels Grid -->
+            <section class="channels-section">
+                <h2 class="section-title">Browse Channels</h2>
+                <div class="channels-grid" id="channelsGrid">
+                    <!-- Channels will be dynamically loaded here -->
+                </div>
+                <div class="no-results" id="noResults">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                        <path d="M12 6v6M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <p>No channels found</p>
+                </div>
+            </section>
+        </main>
 
-            <video
-                id="video"
-                controls
-                autoplay
-                playsinline>
-            </video>
-
-        </div>
-
-        <div class="controls">
-            <button onclick="openFullscreen()">
-                ⛶ Full Screen
-            </button>
-        </div>
-
-        <div class="footer">
-            Powered by GitHub Pages
-        </div>
-
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 BuddyTV. All rights reserved. | Premium Live Streaming Experience</p>
+        </footer>
     </div>
 
-</div>
-
-<script>
-
-const streamUrl =
-"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8";
-
-const video = document.getElementById("video");
-const status = document.getElementById("status");
-const loader = document.getElementById("loader");
-
-function showLoader(){
-    loader.classList.remove("hidden");
-}
-
-function hideLoader(){
-    loader.classList.add("hidden");
-}
-
-showLoader();
-
-if(Hls.isSupported()){
-
-    const hls = new Hls();
-
-    hls.loadSource(streamUrl);
-    hls.attachMedia(video);
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-
-        hideLoader();
-
-        status.innerHTML = "🟢 LIVE";
-
-        video.play().catch(()=>{});
-
-    });
-
-    hls.on(Hls.Events.ERROR, function(event,data){
-
-        console.log(data);
-
-        hideLoader();
-
-        status.innerHTML =
-        "🔴 Stream unavailable or blocked";
-
-    });
-
-}else if(video.canPlayType('application/vnd.apple.mpegurl')){
-
-    video.src = streamUrl;
-
-    video.addEventListener("loadeddata", () => {
-
-        hideLoader();
-
-        status.innerHTML = "🟢 LIVE";
-
-    });
-
-    video.addEventListener("error", () => {
-
-        hideLoader();
-
-        status.innerHTML =
-        "🔴 Stream unavailable";
-
-    });
-
-}
-
-function openFullscreen(){
-
-    if(video.requestFullscreen){
-        video.requestFullscreen();
-    }
-    else if(video.webkitRequestFullscreen){
-        video.webkitRequestFullscreen();
-    }
-    else if(video.msRequestFullscreen){
-        video.msRequestFullscreen();
-    }
-
-}
-
-</script>
-
+    <!-- JavaScript -->
+    <script src="app.js"></script>
 </body>
+
 </html>
