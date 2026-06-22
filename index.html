@@ -3,227 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZAMAN IPTV ULTRA ENGINE</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+<title>Zaman IPTV Ultimate Pro</title>
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#0b1220;
-color:white;
-}
-
-header{
-padding:15px;
-background:linear-gradient(90deg,#22c55e,#06b6d4);
-text-align:center;
-font-weight:bold;
-}
-
-.player{
-position:relative;
-background:black;
-}
-
-video{
-width:100%;
-height:auto;
-}
-
-.sidebar{
-width:280px;
-background:#111827;
-height:100vh;
-overflow:auto;
-float:left;
-padding:10px;
-}
-
-.channel{
-padding:10px;
-margin:5px;
-background:#1f2937;
-cursor:pointer;
-border-radius:8px;
-}
-
-.channel:hover{
-background:#22c55e;
-}
-
-.main{
-margin-left:280px;
-padding:10px;
-}
-
-.controls{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:10px;
-}
-
-button,select{
-padding:10px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-.status{
-margin-top:10px;
-color:#22c55e;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#0f172a;color:#fff}
+.header{padding:15px;text-align:center;background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7);font-weight:bold}
+.topbar{padding:10px}.topbar input{width:100%;padding:10px;border-radius:8px;border:none}
+.player{margin:10px;background:#000;border-radius:12px;padding:20px;text-align:center}
+.category-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:15px}
+.category-bar button{padding:10px 15px;border:none;border-radius:8px;cursor:pointer}
+#list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:15px}
+.channel{background:#1e293b;padding:12px;border-radius:10px;cursor:pointer;text-align:center}
+.footer{text-align:center;padding:20px}
+.light{background:#fff;color:#000}
 </style>
 </head>
-
 <body>
+<div class="header">📺 Zaman IPTV Ultimate Pro</div>
 
-<header>⚡ ZAMAN IPTV ULTRA ENGINE</header>
-
-<div class="sidebar" id="list"></div>
-
-<div class="main">
+<div class="topbar">
+<input id="search" placeholder="Search channels...">
+</div>
 
 <div class="player">
-<video id="video" controls autoplay></video>
+<h3>Video Player Area</h3>
+<p>Add your own stream URLs later.</p>
+<div id="status">Ready</div>
 </div>
 
-<div class="controls">
-<button onclick="toggleAuto()">Auto Quality</button>
-<button onclick="fullscreen()">Fullscreen</button>
+<div class="category-bar">
+<button onclick="setCat('fifa')">🏆 FIFA WORLD CUP</button>
+<button onclick="setCat('others')">📺 OTHERS</button>
+<button onclick="document.body.classList.toggle('light')">🌙 Theme</button>
 </div>
 
-<div class="status" id="status">Ready</div>
+<div id="list"></div>
 
+<div class="footer">
+<p>Telegram: @incomesz</p>
 </div>
 
 <script>
-
 const channels=[
-{name:"Sports 1",url:"https://sofascore.live/api/premium-stream?..."},
-{name:"Sports 2",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
-{name:"Sports 3",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
-{name:"Sports 4",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"}
+{name:"Sports 1",cat:"fifa",url:""},
+{name:"Sports 2",cat:"fifa",url:""},
+{name:"Sports 3",cat:"fifa",url:""},
+{name:"Sports 4",cat:"fifa",url:""},
+{name:"Sports 5",cat:"fifa",url:""},
+{name:"Sports 6",cat:"fifa",url:""},
+{name:"Sports 7",cat:"fifa",url:""},
+{name:"Sports 8",cat:"fifa",url:""},
+{name:"Sports 9",cat:"fifa",url:""},
+{name:"Sports 10",cat:"fifa",url:""},
+{name:"Sports 11",cat:"fifa",url:""},
+{name:"Sports 12",cat:"fifa",url:""},
+{name:"Others 1",cat:"others",url:""},
+{name:"Others 2",cat:"others",url:""},
+{name:"Others 3",cat:"others",url:""},
+{name:"Others 4",cat:"others",url:""},
+{name:"Others 5",cat:"others",url:""}
 ];
 
-let video=document.getElementById("video");
-let list=document.getElementById("list");
-let status=document.getElementById("status");
+let cat='fifa';
+const list=document.getElementById('list');
+const search=document.getElementById('search');
 
-let hls=null;
-let auto=true;
-let currentUrl=null;
+function setCat(c){cat=c;render();}
 
-/* ================= BANDWIDTH DETECTOR ================= */
-async function getSpeed(){
-let start=performance.now();
-try{
-await fetch("https://1.1.1.1",{mode:"no-cors"});
-}catch(e){}
-let end=performance.now();
-let diff=end-start;
-
-if(diff<200) return "high";
-if(diff<500) return "mid";
-return "low";
-}
-
-/* ================= CDN FALLBACK ================= */
-function buildCDN(url){
-return [
-url,
-url.replace("streamhostingcdn","backup1.cdn"),
-url.replace("streamhostingcdn","backup2.cdn")
-];
-}
-
-/* ================= PLAY ENGINE ================= */
-function play(url){
-
-currentUrl=url;
-
-if(hls) hls.destroy();
-
-let cdns=buildCDN(url);
-let tryIndex=0;
-
-hls=new Hls({
-enableWorker:true,
-lowLatencyMode:true,
-maxBufferLength:60,
-backBufferLength:120,
-startLevel:-1
+function render(){
+list.innerHTML='';
+channels.filter(x=>x.cat===cat)
+.filter(x=>x.name.toLowerCase().includes(search.value.toLowerCase()))
+.forEach(c=>{
+ const d=document.createElement('div');
+ d.className='channel';
+ d.innerText=c.name;
+ d.onclick=()=>alert(c.url ? 'URL configured' : 'Stream URL not added');
+ list.appendChild(d);
 });
-
-function load(){
-if(tryIndex>=cdns.length){
-status.innerText="❌ Stream failed";
-return;
 }
 
-status.innerText="🔄 Loading CDN "+(tryIndex+1);
-
-hls.loadSource(cdns[tryIndex]);
-hls.attachMedia(video);
-}
-
-hls.on(Hls.Events.MANIFEST_PARSED,async ()=>{
-status.innerText="🟢 LIVE";
-
-if(auto){
-let speed=await getSpeed();
-if(speed==="high") hls.currentLevel=hls.levels.length-1;
-else if(speed==="mid") hls.currentLevel=Math.floor(hls.levels.length/2);
-else hls.currentLevel=0;
-}
-
-video.play();
-});
-
-hls.on(Hls.Events.ERROR,(e,d)=>{
-if(d.fatal){
-tryIndex++;
-load();
-}
-});
-
-load();
-}
-
-/* ================= UI ================= */
-channels.forEach((c,i)=>{
-let div=document.createElement("div");
-div.className="channel";
-div.innerText=c.name;
-div.onclick=()=>play(c.url);
-list.appendChild(div);
-});
-
-/* ================= AUTO QUALITY ================= */
-function toggleAuto(){
-auto=!auto;
-status.innerText=auto?"Auto ON":"Auto OFF";
-}
-
-/* ================= FULLSCREEN ================= */
-function fullscreen(){
-if(video.requestFullscreen) video.requestFullscreen();
-}
-
-/* ================= INSTANT ZAPPING ================= */
-let lastTime=0;
-video.addEventListener("waiting",()=>{
-let now=Date.now();
-if(now-lastTime<1500){
-status.innerText="⚡ Fast switching...";
-}
-lastTime=now;
-});
-
+search.oninput=render;
+render();
 </script>
-
 </body>
 </html>
