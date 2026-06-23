@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zaman's IPTV </title>
+<title>Zaman IPTV Ultimate Pro</title>
+
+<link rel="stylesheet"
+href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -52,7 +57,12 @@ box-shadow:0 0 20px #22c55e;
 position:relative;
 }
 
-video{width:100%;}
+video{
+width:100%;
+aspect-ratio:16/9;
+background:#000;
+display:block;
+}
 
 .loader{
 position:absolute;
@@ -181,7 +191,7 @@ height:auto;
 
 <body>
 
-<div class="header">📺 Zaman IPTV Ultimate Pro Engine</div>
+<div class="header">📺 Zaman's IPTV </div>
 
 <!-- SEARCH -->
 <div class="topbar">
@@ -192,7 +202,13 @@ height:auto;
 <div class="player-area">
 <div class="player">
 <div id="loader" class="loader hidden"></div>
-<video id="video" controls autoplay></video>
+<video
+id="video"
+class="plyr-video"
+controls
+playsinline
+autoplay
+></video>
 </div>
 </div>
 
@@ -201,7 +217,7 @@ height:auto;
 <!-- SIDEBAR -->
 <div class="sidebar">
 
-<div class="cat" onclick="setCat('sports')">🏆 Sports (12)</div>
+<div class="cat" onclick="setCat('sports')">🏆 Sports </div>
 <div class="cat" onclick="setCat('all')">📺 All</div>
 
 <div id="list"></div>
@@ -248,32 +264,8 @@ height:auto;
 <script>
 
 const channels=[
-{name:"Sports 1",cat:"sports",url:"https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"},
-{name:"Sports 2",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
-{name:"Sports 3",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
-{name:"Sports 4",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"},
-{name:"Sports 5",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8"},
-{name:"Sports 6",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8"},
-{name:"Sports 7",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8"},
-{name:"Sports 8",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8"},
-{name:"Sports 9",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/107/index.m3u8"},
-{name:"Sports 10",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/108/index.m3u8"},
-{name:"Sports 11",cat:"sports",url:"https://a62dad94.wurl.com/manifest/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/bf2e2c08-6355-4c5a-8d38-e6f4470a558d/0.m3u8
-"},
-
-{name:"Sports 11",cat:"sports",url:"https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409/variant/22100007.m3u8
-"},
-{name:"FoX Sports",cat:"sports",url:"https://d1jzu95oc8fgt3.cloudfront.net/FOX_Sports720p.m3u8
-"},
-{name:"somoy tv",cat:"sports",url:"https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8"},
-{name:"Sports 14",cat:"sports",url:"https://rxne77juptdeyke3tytvgqwyh.medya.trt.com.tr/master_1080.m3u8"},
-
-{name:"Sports 15",cat:"sports",url:"https://rnttwmjcin.turknet.ercdn.net/lcpmvefbyo/aspor/aspor_480p.m3u8"},
-
-{name:"Sports 16",cat:"sports",url:"https://master.tucableip.com/Amistoso/index.m3u8"},
-
-
-{name:"Sports 17",cat:"sports",url:"https://streams2.sofast.tv/sofastplayout/WiseM3U8_1/master.m3u8"}
+{name:"Live No Buffer",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
+{name:"Sports 12",cat:"sports",url:"https://nbculocallive.akamaized.net/hls/live/2037499/puertorico/stream1/master.m3u8"}
 ];
 
 let cat="sports";
@@ -308,50 +300,80 @@ list.appendChild(div);
 
 /* PLAY */
 function play(url){
-if(!url) return;
 
-loader.classList.remove("hidden");
-status.innerText="Loading...";
+  if(!url || url.trim()===""){
+    status.innerText="❌ No Stream URL";
+    return;
+  }
 
-if(hls) hls.destroy();
+  loader.classList.remove("hidden");
+  status.innerText="Loading...";
 
-hls=new Hls({
-enableWorker:true,
-lowLatencyMode:true,
-backBufferLength:120,
-maxBufferLength:60,
-startLevel:-1
-});
+  if(hls) hls.destroy();
 
-hls.loadSource(url);
-hls.attachMedia(video);
+  hls = new Hls({
+    enableWorker:true,
+    lowLatencyMode:true,
+    backBufferLength:120,
+    maxBufferLength:60,
+    startLevel:-1
+  });
 
-hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-loader.classList.add("hidden");
-status.innerText="🟢 LIVE";
-video.play();
-});
+  hls.loadSource(url);
+  hls.attachMedia(video);
+
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+
+    qualitySelect.innerHTML =
+    '<option value="-1">Auto</option>';
+
+    hls.levels.forEach((level,index)=>{
+      qualitySelect.innerHTML +=
+      `<option value="${index}">
+        ${level.height}p
+      </option>`;
+    });
+
+    loader.classList.add("hidden");
+    status.innerText="🟢 LIVE";
+    video.play();
+
+  });
+
+  hls.on(Hls.Events.ERROR,(event,data)=>{
+
+    if(data.fatal){
+      loader.classList.add("hidden");
+      status.innerText="🔴 Stream Error";
+    }
+
+  });
+
 }
 
 /* QUALITY */
 qualitySelect.addEventListener("change",function(){
-if(!hls) return;
-let v=parseInt(this.value);
-if(v===-1){hls.currentLevel=-1;return;}
-for(let i=0;i<hls.levels.length;i++){
-if(hls.levels[i].height>=v){
-hls.currentLevel=i;
-break;
-}
-}
-});
 
+  if(!hls) return;
+
+  const level = parseInt(this.value);
+
+  hls.currentLevel = level;
+
+  status.innerText =
+    level === -1 ? "Auto Quality" : "Quality Changed";
+
+});
 /* AUTO */
 function toggleAutoQuality(){
-autoQuality=!autoQuality;
-status.innerText=autoQuality?"Auto ON":"Auto OFF";
-}
 
+if(!hls) return;
+
+hls.currentLevel=-1;
+
+status.innerText="Auto Quality";
+
+}
 /* FULLSCREEN */
 function openFullscreen(){
 if(video.requestFullscreen) video.requestFullscreen();
@@ -361,6 +383,26 @@ else if(video.webkitRequestFullscreen) video.webkitRequestFullscreen();
 /* SEARCH */
 search.oninput=render;
 
+const player = new Plyr('#video',{
+
+controls:[
+'play-large',
+'play',
+'progress',
+'current-time',
+'mute',
+'volume',
+'settings',
+'pip',
+'fullscreen'
+],
+
+settings:[
+'quality',
+'speed'
+]
+
+});
 /* INIT */
 render();
 
