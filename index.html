@@ -123,6 +123,23 @@ text-align:center;
 background:linear-gradient(135deg,#22c55e,#06b6d4);
 }
 
+.active-channel{
+background:linear-gradient(135deg,#22c55e,#06b6d4)!important;
+border:2px solid #ffffff;
+font-weight:bold;
+position:relative;
+}
+
+.active-channel::after{
+content:"🟢 LIVE";
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+font-size:12px;
+font-weight:bold;
+color:#fff;
+}
 /* MAIN */
 .main{
 flex:1;
@@ -274,6 +291,7 @@ const channels=[
 let cat="sports";
 let hls=null;
 let autoQuality=true;
+let currentChannel = "";
 
 const list=document.getElementById("list");
 const video=document.getElementById("video");
@@ -283,27 +301,32 @@ const status=document.getElementById("status");
 const qualitySelect=document.getElementById("qualitySelect");
 
 function setCat(c){
-  cat=c;
+  cat = c;
   render();
 }
 
-
 function render(){
-list.innerHTML="";
-channels
-.filter(c=>cat==="all"||c.cat===cat)
-.filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
-.forEach(c=>{
-const div=document.createElement("div");
-div.className="channel";
-div.innerText=c.name;
-div.onclick=()=>play(c.url);
-list.appendChild(div);
-});
+  list.innerHTML="";
+  channels
+  .filter(c=>cat==="all"||c.cat===cat)
+  .filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
+  .forEach(c=>{
+    const div=document.createElement("div");
+    div.className =
+    c.name === currentChannel
+    ? "channel active-channel"
+    : "channel";
+
+    div.innerText=c.name;
+    div.onclick=()=>play(c.url);
+    list.appendChild(div);
+  });
 }
 
 /* PLAY */
 function play(url){
+
+  const channel = channels.find(c => c.url === url);
 
   if(!url || url.trim()===""){
     status.innerText="❌ No Stream URL";
@@ -313,7 +336,9 @@ function play(url){
   loader.classList.remove("hidden");
   status.innerText="Loading...";
 
-  if(hls) hls.destroy();
+  if(hls){
+    hls.destroy();
+  }
 
   hls = new Hls({
     enableWorker:true,
@@ -328,8 +353,13 @@ function play(url){
 
   hls.on(Hls.Events.MANIFEST_PARSED,()=>{
 
+    if(channel){
+      currentChannel = channel.name;
+      render();
+    }
+
     qualitySelect.innerHTML =
-    '<option value="-1">Auto</option>';
+      '<option value="-1">Auto</option>';
 
     hls.levels.forEach((level,index)=>{
       qualitySelect.innerHTML +=
@@ -410,7 +440,9 @@ settings:[
 /* INIT */
 render();
 
-</script>
+if(channels.length){
+  play(channels[0].url);
+}</script>
 
 </body>
 </html>
