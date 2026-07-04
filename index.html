@@ -291,10 +291,9 @@ cat:"sports",
 url:"http://114.130.57.233:8080/BTV/video.m3u8?token=SkQuhAXZxgBan1"
 },
 {
-name:" T Sports",
+name:"T Sports",
 cat:"sports",
-url:"http://114.130.57.233:8080/LIVE-Sports/video.m3u8?token=SkQuhAXZxgBan1
-"
+url:"http://114.130.57.233:8080/LIVE-Sports/video.m3u8?token=SkQuhAXZxgBan1"
 },
 {
 name:"Live No Buffer 4",
@@ -362,38 +361,50 @@ function setCat(c){
 
 function render(){
   list.innerHTML="";
+
   channels
-  .filter(c=>cat==="all"||c.cat===cat)
-  .filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
-  .forEach(c=>{
-    const div=document.createElement("div");
-    div.className =
-    c.name === currentChannel
-    ? "channel active-channel"
-    : "channel";
+    .filter(c => cat==="all" || c.cat===cat)
+    .filter(c => c.name.toLowerCase().includes(search.value.trim().toLowerCase()))
+    .forEach(c => {
 
-    div.innerText=c.name;
-    div.onclick=()=>play(c.url);
-    list.appendChild(div);
-  });
+      const div=document.createElement("div");
+
+      div.className =
+        c.name===currentChannel
+        ? "channel active-channel"
+        : "channel";
+
+      div.innerText=c.name;
+      div.onclick=()=>play(c.url.trim());
+
+      list.appendChild(div);
+
+    });
 }
-
 /* PLAY */
+
 function play(url){
 
-  const channel = channels.find(c => c.url === url);
+    url = url.trim();
 
-  if(!url || url.trim()===""){
-    status.innerText="❌ No Stream URL";
-    return;
-  }
+    const channel = channels.find(c=>c.url.trim()===url);
 
-  loader.classList.remove("hidden");
-  status.innerText="Loading...";
+    if(!url){
+        status.innerText="❌ No Stream URL";
+        return;
+    }
+
+    loader.classList.remove("hidden");
+    status.innerText="Loading...";
 
   if(hls){
     hls.destroy();
-  }
+    hls=null;
+}
+
+video.pause();
+video.removeAttribute("src");
+video.load();
 if (Hls.isSupported()) {
 
     hls = new Hls({
@@ -411,36 +422,37 @@ if (Hls.isSupported()) {
 
     video.src = url;
 
-} else {
-
     loader.classList.add("hidden");
-    status.innerText = "HLS Not Supported";
+
+    status.innerText="🟢 LIVE";
+
+    video.play().catch(console.error);
+
     return;
 
 }
-
   hls.on(Hls.Events.MANIFEST_PARSED,()=>{
 
     if(channel){
-      currentChannel = channel.name;
-      render();
+        currentChannel=channel.name;
+        render();
     }
 
-    qualitySelect.innerHTML =
-      '<option value="-1">Auto</option>';
+    qualitySelect.innerHTML='<option value="-1">Auto</option>';
 
     hls.levels.forEach((level,index)=>{
-      qualitySelect.innerHTML +=
-      `<option value="${index}">
-        ${level.height}p
-      </option>`;
+        qualitySelect.innerHTML +=
+        `<option value="${index}">
+            ${level.height}p
+        </option>`;
     });
 
     loader.classList.add("hidden");
     status.innerText="🟢 LIVE";
-    video.play();
 
-  });
+    video.play().catch(console.error);
+
+});
 
 hls.on(Hls.Events.ERROR,(event,data)=>{
 
@@ -468,13 +480,14 @@ hls.on(Hls.Events.ERROR,(event,data)=>{
 
         default:
 
-            loader.classList.add("hidden");
+    loader.classList.add("hidden");
 
-            status.innerText="❌ Stream Error";
+    status.innerText="❌ Stream Error";
 
-            hls.destroy();
+    hls.destroy();
+    hls = null;
 
-            break;
+    break;
 
     }
 
