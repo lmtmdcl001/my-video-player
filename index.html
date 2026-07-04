@@ -279,68 +279,38 @@ autoplay
 </div>
 
 <script>
-const channels = [
-{
-name:"Live No Buffer 1",
-cat:"sports",
-url:"https://cricxtv.fun/isceen.php?file=https://tc-sg.rockstreamer.com/v1/019ed91616121ea540a8171c8e801f/019ed92ac80315fc600b1796d4ad8b/tc_sg_1_1080p.m3u8"
-},
-{
-name:"Live No Buffer 2",
-cat:"sports",
-url:"https://tahmidx.dotredfalcon.workers.dev/"
-},
-{
-name:"Fox Sports 3",
-cat:"sports",
-url:"https://play.gzxdby.com/live/183334344568_2547627111_1080p.m3u8"
-},
-{
-name:"Live No Buffer 4",
-cat:"sports",
-url:"https://cdn011.viaplus.site/tsn1-ca.m3u8"
-},
-{
-name:"Live No Buffer 5",
-cat:"sports",
-url:"https://live.666666.zip/migu/1.m3u8"
-},
-{
-name:"Bioscope Live",
-cat:"sports",
-url:"https://rajutv.pages.dev/proxy?url=https%3A%2F%2Fdalvikcmpsr.ahmedtahsindipto.workers.dev%2Fr%2Fhttps%253A%252F%252Ffifa-stream-01.bioscopelive.com%252Fout%252Fv1%252F60e7608404004b1186261497b404630b%252Findex_1.m3u8"
-},
-{
-name:"Toffee",
-cat:"sports",
-url:"https://prod-cdn01-live.toffeelive.com/live/FIFA-2026/sst/0/master_1500.m3u8?hdntl=Expires=1782987569~_GO=Generated~URLPrefix=aHR0cHM6Ly9wcm9kLWNkbjAxLWxpdmUudG9mZmVlbGl2ZS5jb20~Signature=AeQsclD8E49TKJaioAwFJMUnGas8vyrFS1xrDoQoYIpVkaFGVB9nWJHjO_eeWQ5uRmmQuoCmVj_sgwUqfi-Z-ci98FUD"
-},
-{
-name:"Sports 23",
-cat:"sports",
-url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"
-},
-{
-name:"BTV HD",
-cat:"sports",
-url:"http://114.130.57.233:8080/BTV/tracks-v1a1/mono.m3u8?token=SkQuhAXZxgBan1"
-},
-{
-name:"Somoy TV",
-cat:"all",
-url:"https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8"
-},
-{
-name:"Rock Stream",
-cat:"sports",
-url:"https://cricxtv.fun/isceen.php?file=https://tc-sg.rockstreamer.com/v1/019ed91616121ea540a8171c8e801f/019ed92ac80315fc600b1796d4ad8b/tc_sg_1_1080p.m3u8"
-},
-{
-name:"BTV FMP4",
-cat:"sports",
-url:"http://180.94.28.28:8097/BTV/index.fmp4.m3u8"
-}
-];
+let channels = [];
+
+fetch("https://go.skym3u.top/5dzx.m3u")
+  .then(response => response.text())
+  .then(text => {
+    const lines = text.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("#EXTINF")) {
+        const name = lines[i].split(",").pop().trim();
+        const url = lines[i + 1]?.trim();
+
+        if (url && url.startsWith("http")) {
+          channels.push({
+            name: name,
+            cat: "all",
+            url: url
+          });
+        }
+      }
+    }
+
+    render();
+
+    if (channels.length) {
+      play(channels[0].url);
+    }
+  })
+  .catch(err => {
+    status.innerText = "Playlist Load Failed";
+    console.error(err);
+  });
 
 let cat="sports";
 let hls=null;
