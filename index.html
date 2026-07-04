@@ -1,514 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zaman's IPTV </title>
-
-<link rel="stylesheet"
-href="https://cdn.plyr.io/3.7.8/plyr.css"/>
-
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-font-family:Arial;
-background:linear-gradient(135deg,#0f172a,#111827,#0b1220);
-color:white;
+const channels = [
+{
+name:"Live No Buffer 1",
+cat:"sports",
+url:"https://cricxtv.fun/isceen.php?file=https://tc-sg.rockstreamer.com/v1/019ed91616121ea540a8171c8e801f/019ed92ac80315fc600b1796d4ad8b/tc_sg_1_1080p.m3u8"
+},
+{
+name:"Live No Buffer 2",
+cat:"sports",
+url:"http://114.130.57.233:8080/BTV/video.m3u8?token=SkQuhAXZxgBan1"
+},
+{
+name:" T Sports",
+cat:"sports",
+url:"http://114.130.57.233:8080/LIVE-Sports/video.m3u8?token=SkQuhAXZxgBan1
+"
+},
+{
+name:"Live No Buffer 4",
+cat:"sports",
+url:"https://cdn011.viaplus.site/tsn1-ca.m3u8"
+},
+{
+name:"Live No Buffer 5",
+cat:"sports",
+url:"https://live.666666.zip/migu/1.m3u8"
+},
+{
+name:"Bioscope Live",
+cat:"sports",
+url:"https://rajutv.pages.dev/proxy?url=https%3A%2F%2Fdalvikcmpsr.ahmedtahsindipto.workers.dev%2Fr%2Fhttps%253A%252F%252Ffifa-stream-01.bioscopelive.com%252Fout%252Fv1%252F60e7608404004b1186261497b404630b%252Findex_1.m3u8"
+},
+{
+name:"Toffee",
+cat:"sports",
+url:" "
+},
+{
+name:"Sports 23",
+cat:"sports",
+url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"
+},
+{
+name:"BTV HD",
+cat:"sports",
+url:"http://114.130.57.233:8080/BTV/video.m3u8?token=SkQuhAXZxgBan1"
+},
+{
+name:"Somoy TV",
+cat:"all",
+url:"https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8"
+},
+{
+name:"Rock Stream",
+cat:"sports",
+url:"https://cricxtv.fun/isceen.php?file=https://tc-sg.rockstreamer.com/v1/019ed91616121ea540a8171c8e801f/019ed92ac80315fc600b1796d4ad8b/tc_sg_1_1080p.m3u8"
+},
+{
+name:"BTV FMP4",
+cat:"sports",
+url:"http://180.94.28.28:8097/BTV/index.fmp4.m3u8"
 }
-
-/* HEADER */
-.header{
-padding:15px;
-text-align:center;
-font-size:20px;
-font-weight:bold;
-background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7);
-}
-
-/* TOP SEARCH */
-.topbar{
-padding:10px;
-background:#0b1220;
-}
-
-.topbar input{
-width:100%;
-padding:10px;
-border:none;
-border-radius:8px;
-outline:none;
-}
-
-/* PLAYER TOP */
-.player-area{
-padding:10px;
-}
-
-.player{
-background:black;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 0 20px #22c55e;
-position:relative;
-}
-
-video{
-width:100%;
-aspect-ratio:16/9;
-background:#000;
-display:block;
-}
-
-.loader{
-position:absolute;
-top:50%;
-left:50%;
-width:40px;
-height:40px;
-border:4px solid #444;
-border-top:4px solid #22c55e;
-border-radius:50%;
-transform:translate(-50%,-50%);
-animation:spin 1s linear infinite;
-}
-
-.hidden{display:none;}
-
-@keyframes spin{
-to{transform:translate(-50%,-50%) rotate(360deg);}
-}
-
-/* LAYOUT */
-.container{
-display:flex;
-}
-
-/* SIDEBAR */
-.sidebar{
-width:280px;
-background:#0b1220;
-height:100vh;
-overflow:auto;
-padding:10px;
-border-right:2px solid #22c55e;
-}
-
-.cat{
-padding:10px;
-margin:5px 0;
-background:#1f2937;
-border-radius:8px;
-cursor:pointer;
-text-align:center;
-}
-
-.cat:hover{background:#22c55e;}
-
-/* CHANNEL */
-.channel{
-padding:12px;
-margin:6px 0;
-background:linear-gradient(135deg,#1e293b,#334155);
-border-radius:10px;
-cursor:pointer;
-text-align:center;
-}
-
-.channel:hover{
-background:linear-gradient(135deg,#22c55e,#06b6d4);
-}
-
-.active-channel{
-background:linear-gradient(135deg,#22c55e,#06b6d4)!important;
-border:2px solid #ffffff;
-font-weight:bold;
-position:relative;
-}
-
-.active-channel::after{
-content:"🟢 LIVE";
-position:absolute;
-right:10px;
-top:50%;
-transform:translateY(-50%);
-font-size:12px;
-font-weight:bold;
-color:#fff;
-}
-/* MAIN */
-.main{
-flex:1;
-padding:15px;
-}
-
-/* CONTROLS */
-.controls{
-margin-top:10px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
-
-select,button{
-padding:10px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-button{
-background:linear-gradient(90deg,#22c55e,#06b6d4);
-color:white;
-font-weight:bold;
-}
-
-/* STATUS */
-.status{
-margin-top:10px;
-color:#22c55e;
-font-weight:bold;
-}
-
-/* FOOTER */
-.footer{
-margin-top:20px;
-padding:20px;
-text-align:center;
-background:#0b1220;
-border-top:2px solid #22c55e;
-}
-
-.footer h3{
-color:#22c55e;
-margin-bottom:10px;
-}
-
-.footer a{
-color:#06b6d4;
-display:block;
-margin:5px 0;
-text-decoration:none;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-.container{flex-direction:column;}
-.sidebar{
-width:100%;
-height:auto;
-}
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">📺 Zaman's IPTV </div>
-
-<!-- SEARCH -->
-<div class="topbar">
-<input id="search" placeholder="Search channels...">
-</div>
-
-<!-- PLAYER TOP -->
-<div class="player-area">
-<div class="player">
-<div id="loader" class="loader hidden"></div>
-<video
-id="video"
-class="plyr-video"
-controls
-playsinline
-autoplay
-></video>
-</div>
-</div>
-
-<div class="container">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<div class="cat" onclick="setCat('sports')">🏆 Sports </div>
-<div class="cat" onclick="setCat('all')">📺 All</div>
-
-<div id="list"></div>
-
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-<div class="status" id="status">Ready</div>
-
-<div class="controls">
-
-<select id="qualitySelect">
-<option value="-1">Auto</option>
-<option value="360">360p</option>
-<option value="480">480p</option>
-<option value="720">720p</option>
-<option value="1080">1080p</option>
-</select>
-
-<button onclick="toggleAutoQuality()">Auto Mode</button>
-<button onclick="openFullscreen()">Fullscreen</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-
-<h3>Developer Contact</h3>
-
-<a href="https://t.me/incomesz">📱 Telegram: @incomesz</a>
-<a href="https://www.facebook.com/zamanr00">🌐 Facebook Profile</a>
-
-<p>📍 Rangpur, Bangladesh</p>
-<p>© 2026 Zaman IPTV. All Rights Reserved.</p>
-
-</div>
-
-<script>
-let channels = [];
-
-fetch("https://go.skym3u.top/5dzx.m3u")
-  .then(response => response.text())
-  .then(text => {
-    const lines = text.split("\n");
-
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith("#EXTINF")) {
-        const name = lines[i].split(",").pop().trim();
-        const url = lines[i + 1]?.trim();
-
-        if (url && url.startsWith("http")) {
-          channels.push({
-            name: name,
-            cat: "all",
-            url: url
-          });
-        }
-      }
-    }
-
-    render();
-
-    if (channels.length) {
-      play(channels[0].url);
-    }
-  })
-  .catch(err => {
-    status.innerText = "Playlist Load Failed";
-    console.error(err);
-  });
-
-let cat="sports";
-let hls=null;
-let autoQuality=true;
-let currentChannel = "";
-
-const list=document.getElementById("list");
-const video=document.getElementById("video");
-const loader=document.getElementById("loader");
-const search=document.getElementById("search");
-const status=document.getElementById("status");
-const qualitySelect=document.getElementById("qualitySelect");
-
-function setCat(c){
-  cat = c;
-  render();
-}
-
-function render(){
-  list.innerHTML="";
-  channels
-  .filter(c=>cat==="all"||c.cat===cat)
-  .filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
-  .forEach(c=>{
-    const div=document.createElement("div");
-    div.className =
-    c.name === currentChannel
-    ? "channel active-channel"
-    : "channel";
-
-    div.innerText=c.name;
-    div.onclick=()=>play(c.url);
-    list.appendChild(div);
-  });
-}
-
-/* PLAY */
-function play(url){
-
-  const channel = channels.find(c => c.url === url);
-
-  if(!url || url.trim()===""){
-    status.innerText="❌ No Stream URL";
-    return;
-  }
-
-  loader.classList.remove("hidden");
-  status.innerText="Loading...";
-
-  if(hls){
-    hls.destroy();
-  }
-if (Hls.isSupported()) {
-
-    hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 120,
-        maxBufferLength: 60,
-        startLevel: -1
-    });
-
-    hls.loadSource(url);
-    hls.attachMedia(video);
-
-} else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-
-    video.src = url;
-
-} else {
-
-    loader.classList.add("hidden");
-    status.innerText = "HLS Not Supported";
-    return;
-
-}
-
-  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-
-    if(channel){
-      currentChannel = channel.name;
-      render();
-    }
-
-    qualitySelect.innerHTML =
-      '<option value="-1">Auto</option>';
-
-    hls.levels.forEach((level,index)=>{
-      qualitySelect.innerHTML +=
-      `<option value="${index}">
-        ${level.height}p
-      </option>`;
-    });
-
-    loader.classList.add("hidden");
-    status.innerText="🟢 LIVE";
-    video.play();
-
-  });
-
-hls.on(Hls.Events.ERROR,(event,data)=>{
-
-    console.log(data);
-
-    if(!data.fatal) return;
-
-    switch(data.type){
-
-        case Hls.ErrorTypes.NETWORK_ERROR:
-
-            status.innerText="🌐 Network Error";
-
-            hls.startLoad();
-
-            break;
-
-        case Hls.ErrorTypes.MEDIA_ERROR:
-
-            status.innerText="🎥 Media Error";
-
-            hls.recoverMediaError();
-
-            break;
-
-        default:
-
-            loader.classList.add("hidden");
-
-            status.innerText="❌ Stream Error";
-
-            hls.destroy();
-
-            break;
-
-    }
-
-});
-
-}
-
-/* QUALITY */
-qualitySelect.addEventListener("change",function(){
-
-  if(!hls) return;
-
-  const level = parseInt(this.value);
-
-  hls.currentLevel = level;
-
-  status.innerText =
-    level === -1 ? "Auto Quality" : "Quality Changed";
-
-});
-/* AUTO */
-function toggleAutoQuality(){
-
-if(!hls) return;
-
-hls.currentLevel=-1;
-
-status.innerText="Auto Quality";
-
-}
-/* FULLSCREEN */
-function openFullscreen(){
-if(video.requestFullscreen) video.requestFullscreen();
-else if(video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-}
-
-/* SEARCH */
-search.oninput=render;
-
-const player = new Plyr('#video',{
-
-controls:[
-'play-large',
-'play',
-'progress',
-'current-time',
-'mute',
-'volume',
-'settings',
-'pip',
-'fullscreen'
-],
-
-settings:[
-'quality',
-'speed'
-]
-
-});
-/* INIT */
-render();
-
-if(channels.length){
-  play(channels[0].url);
-}</script>
-
-</body>
-</html>
+];
